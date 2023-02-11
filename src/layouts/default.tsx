@@ -1,25 +1,18 @@
-import * as React from 'react'
-import AppBar from '@mui/material/AppBar'
+import React from 'react'
+import { ReactElement } from 'react'
+import { useRouter } from "next/router"
+import { useAuthenticator } from '@aws-amplify/ui-react'
+
 import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
-import AccountCircle from '@mui/icons-material/AccountCircle'
-import MenuItem from '@mui/material/MenuItem'
-import Menu from '@mui/material/Menu'
-import Drawer from '@mui/material/Drawer'
-import List from '@mui/material/List'
-import Divider from '@mui/material/Divider'
-import ListItem from '@mui/material/ListItem'
-import ListItemButton from '@mui/material/ListItemButton'
-import ListItemIcon from '@mui/material/ListItemIcon'
-import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
+import { AppBar, Toolbar, Drawer, Menu, MenuItem } from '@mui/material'
+import { List, ListItemButton, ListItemIcon, ListItemText } from '@mui/material'
 
-import { ReactElement } from 'react'
-import { useAuthenticator } from '@aws-amplify/ui-react'
+import MenuIcon from '@mui/icons-material/Menu'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle'
+import HomeIcon from "@mui/icons-material/Home"
+import InfoIcon from "@mui/icons-material/Info"
 
 type LayoutProps = Required<{
   readonly children: ReactElement
@@ -31,6 +24,7 @@ const drawerWidth = 240
 
 export default function Layout({ children }: LayoutProps) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const router = useRouter()
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -41,6 +35,12 @@ export default function Layout({ children }: LayoutProps) {
   }
 
   const { user, signOut } = useAuthenticator((context: any) => [context.user])
+
+  const itemslist = [
+    { text: "Profile", icon: <AccountCircleIcon />, onclick: () => router.push("/accounts/") },
+    { text: "Home", icon: <HomeIcon />, onclick: () => router.push("/groups/") },
+    { text: "About", icon: <InfoIcon />, onclick: () => router.push("/groups/about") },
+  ]
 
   return (
     <>
@@ -57,7 +57,7 @@ export default function Layout({ children }: LayoutProps) {
               <div>
                 {user.username}
                 <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleMenu} color="inherit">
-                  <AccountCircle />
+                  <AccountCircleIcon />
                 </IconButton>
                 <Menu
                   id="menu-appbar"
@@ -89,33 +89,17 @@ export default function Layout({ children }: LayoutProps) {
           }}
         >
           <Toolbar />
-          <Box sx={{ overflow: 'auto' }}>
-            <List>
-              {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-            <List>
-              {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                <ListItem key={text} disablePadding>
-                  <ListItemButton>
-                    <ListItemIcon>
-                      {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                    </ListItemIcon>
-                    <ListItemText primary={text} />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
+          <List>
+            {itemslist.map((item, index) => {
+              const { text, icon, onclick } = item
+              return (
+                <ListItemButton key={text} onClick={onclick}>
+                  <ListItemIcon>{icon}</ListItemIcon>
+                  <ListItemText primary={text} />
+                </ListItemButton>
+              )
+            })}
+          </List>
         </Drawer>
         <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
           <Toolbar />
