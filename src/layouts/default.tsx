@@ -39,7 +39,8 @@ export default function Layout({ children }: LayoutProps) {
   const itemslist = [
     { text: "Profile", icon: <AccountCircleIcon />, onclick: () => router.push("/accounts/") },
     { text: "Home", icon: <HomeIcon />, onclick: () => router.push("/groups/") },
-    { text: "Map", icon: <InfoIcon />, onclick: () => router.push("/map/") },
+    { text: "Map", icon: <InfoIcon />, onclick: () => router.push("/groups/map/") },
+    { text: "Chart", icon: <InfoIcon />, onclick: () => router.push("/groups/chart/") },
   ]
 
   return (

@@ -2,13 +2,14 @@ import React from "react"
 import L from "leaflet"
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
+//@ts-ignore
 import MarkerClusterGroup from '@changey/react-leaflet-markercluster'
 import '@changey/react-leaflet-markercluster/dist/styles.min.css'
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png"
 import markerIcon from "leaflet/dist/images/marker-icon.png"
 import markerShadow from "leaflet/dist/images/marker-shadow.png"
-
+//@ts-ignore
 delete L.Icon.Default.prototype._getIconUrl
 L.Icon.Default.mergeOptions({
   iconUrl: markerIcon.src,
