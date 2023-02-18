@@ -1,7 +1,6 @@
 import React from 'react'
-import { ReactElement } from 'react'
+import { useState, ReactElement } from 'react'
 import { useRouter } from "next/router"
-import { useAuthenticator } from '@aws-amplify/ui-react'
 
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
@@ -14,16 +13,24 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle'
 import HomeIcon from "@mui/icons-material/Home"
 import InfoIcon from "@mui/icons-material/Info"
 
+import { useRecoilState } from "recoil"
+import { ProtectRoute } from "@/middleware/protectRoute"
+import stateCurrentUser from '@/store/user'
+import { Auth } from '@aws-amplify/auth'
+import awsconfig from '@/aws-exports'
+
+Auth.configure(awsconfig)
+
 type LayoutProps = Required<{
   readonly children: ReactElement
 }>
 
 const title = process.env.NEXT_PUBLIC_TITLE
-
 const drawerWidth = 240
 
 export default function Layout({ children }: LayoutProps) {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
+  const [user] = useRecoilState(stateCurrentUser)
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const router = useRouter()
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -34,7 +41,14 @@ export default function Layout({ children }: LayoutProps) {
     setAnchorEl(null)
   }
 
-  const { user, signOut } = useAuthenticator((context: any) => [context.user])
+  const signOut = async () => {
+    try {
+      const res = await Auth.signOut()
+      console.log(res)
+    } catch (error) {
+      console.log('error signing out: ', error)
+    }
+  }
 
   const itemslist = [
     { text: "Profile", icon: <AccountCircleIcon />, onclick: () => router.push("/accounts/") },
@@ -54,9 +68,9 @@ export default function Layout({ children }: LayoutProps) {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               {title}
             </Typography>
+            {user?.signInUserSession.idToken.payload.email}
             {(
               <div>
-                {user.username}
                 <IconButton size="large" aria-label="account of current user" aria-controls="menu-appbar" aria-haspopup="true" onClick={handleMenu} color="inherit">
                   <AccountCircleIcon />
                 </IconButton>
@@ -107,7 +121,6 @@ export default function Layout({ children }: LayoutProps) {
           <main>{children}</main>
         </Box>
       </Box>
-
     </>
   )
 }

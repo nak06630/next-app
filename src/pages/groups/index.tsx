@@ -1,7 +1,7 @@
 import React from 'react'
-import { useAuthenticator } from '@aws-amplify/ui-react'
 import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material'
-import Paper from '@mui/material/Paper'
+import { useRecoilState } from "recoil"
+import stateCurrentUser from '@/store/user'
 
 interface User {
   id: string
@@ -9,17 +9,17 @@ interface User {
   email: string
 }
 interface Users {
-  users: User[];
+  users: User[]
 }
 
 export default function Groups({ users }: Users) {
   // hook below is only reevaluated when `user` changes
-  const { user } = useAuthenticator((context: any) => [context.user])
+  const [user] = useRecoilState(stateCurrentUser)
 
   return (
     <>
-      <h1>Hello {user.username}</h1>
-      <TableContainer component={Paper}>
+      <h1>Hello {user?.signInUserSession.idToken.payload.email}</h1>
+      <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>

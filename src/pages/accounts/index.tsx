@@ -1,10 +1,11 @@
-import React from 'react'
-import { useAuthenticator } from '@aws-amplify/ui-react'
+import { useRecoilState } from "recoil"
+import currentUserState from '@/store/user'
 
 export default function Profile() {
   // hook below is only reevaluated when `user` changes
-  const { user } = useAuthenticator((context: any) => [context.user]) as any
+  const [user] = useRecoilState(currentUserState)
 
+  if (!user) return <div>Error</div>
   return (
     <>
       <pre>user.username = {JSON.stringify(user.username, null, 2)}</pre>
