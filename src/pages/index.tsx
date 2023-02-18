@@ -1,5 +1,5 @@
 import { useRouter } from "next/router"
-import { Button, Container, Stack, TextField } from '@mui/material'
+import { Button, Card, CardHeader, CardContent, Container, Stack, TextField } from '@mui/material'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
@@ -20,18 +20,15 @@ interface SampleFormInput {
 const schema = yup.object({
   email: yup
     .string()
-    .required('必須だよ')
-    .email('正しいメールアドレス入力してね'),
+    .required('必須です')
+    .email('メールアドレス形式で入力してください'),
   password: yup
     .string()
-    .required('必須だよ')
-    .min(6, '少ないよ')
-  /*
+    .required('必須です')
     .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&].*$/,
-      'パスワード弱いよ'
+      /^(?=.*[!-/:-@[-`{-~])(?=.*[0-9])(?=.*[a-z])[!-~]{8,}$/,
+      'パスワードを入力してください'
     ),
-  */
 })
 
 export default function Login() {
@@ -49,7 +46,6 @@ export default function Login() {
     console.log(data)
     try {
       const user = await Auth.signIn(data.email, data.password)
-      console.log(user)
       setUser(user)
       router.push("/groups/")
     } catch (error) {
@@ -59,32 +55,37 @@ export default function Login() {
 
   return (
     <Container maxWidth="sm" sx={{ pt: 5 }}>
-      <Stack spacing={3}>
-        <TextField
-          required
-          label="メールアドレス"
-          type="email"
-          {...register('email')}
-          error={'email' in errors}
-          helperText={errors.email?.message}
-        />
-        <TextField
-          required
-          label="パスワード"
-          type="password"
-          {...register('password')}
-          error={'password' in errors}
-          helperText={errors.password?.message}
-        />
-        <Button
-          color="primary"
-          variant="contained"
-          size="large"
-          onClick={handleSubmit(onSubmit)}
-        >
-          ログイン
-        </Button>
-      </Stack>
+      <Card>
+        <CardHeader title="ログイン"></CardHeader>
+        <CardContent>
+          <Stack spacing={3}>
+            <TextField
+              required
+              label="メールアドレス"
+              type="email"
+              {...register('email')}
+              error={'email' in errors}
+              helperText={errors.email?.message}
+            />
+            <TextField
+              required
+              label="パスワード"
+              type="password"
+              {...register('password')}
+              error={'password' in errors}
+              helperText={errors.password?.message}
+            />
+            <Button
+              color="primary"
+              variant="contained"
+              size="large"
+              onClick={handleSubmit(onSubmit)}
+            >
+              ログイン
+            </Button>
+          </Stack>
+        </CardContent>
+      </Card>
     </Container>
   )
 }

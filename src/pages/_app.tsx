@@ -8,7 +8,10 @@ import createEmotionCache from '@/createEmotionCache'
 import { RecoilRoot } from 'recoil'
 import type { AppPropsWithLayout } from '@/types/layout'
 import Layout from '@/layouts/default'
+import { Auth } from '@aws-amplify/auth'
+import awsconfig from '@/aws-exports'
 
+Auth.configure(awsconfig)
 const clientSideEmotionCache = createEmotionCache()
 interface MyAppProps extends AppPropsWithLayout {
   emotionCache?: EmotionCache;
@@ -17,6 +20,10 @@ interface MyAppProps extends AppPropsWithLayout {
 function MyApp(props: MyAppProps) {
   const { Component, emotionCache = clientSideEmotionCache, pageProps } = props
   const router = useRouter()
+
+  // 認証されていなかったらログアウト
+  Auth.currentAuthenticatedUser().catch(err => router.push('/'))
+
   const getLayout = router.route.startsWith("/groups") || router.route.startsWith("/accounts")
     ? (page: any) => <RecoilRoot><Layout>{page}</Layout></RecoilRoot>
     : (page: any) => <RecoilRoot>{page}</RecoilRoot>

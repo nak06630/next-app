@@ -14,8 +14,7 @@ import HomeIcon from "@mui/icons-material/Home"
 import InfoIcon from "@mui/icons-material/Info"
 
 import { useRecoilState } from "recoil"
-import { ProtectRoute } from "@/middleware/protectRoute"
-import stateCurrentUser from '@/store/user'
+import currentUserState from '@/store/user'
 import { Auth } from '@aws-amplify/auth'
 import awsconfig from '@/aws-exports'
 
@@ -29,7 +28,7 @@ const title = process.env.NEXT_PUBLIC_TITLE
 const drawerWidth = 240
 
 export default function Layout({ children }: LayoutProps) {
-  const [user] = useRecoilState(stateCurrentUser)
+  const [user] = useRecoilState(currentUserState)
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const router = useRouter()
 
@@ -43,8 +42,8 @@ export default function Layout({ children }: LayoutProps) {
 
   const signOut = async () => {
     try {
-      const res = await Auth.signOut()
-      console.log(res)
+      await Auth.signOut()
+      router.push('/')
     } catch (error) {
       console.log('error signing out: ', error)
     }
