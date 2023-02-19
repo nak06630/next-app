@@ -1,7 +1,7 @@
 import React from 'react'
 import { TableContainer, Table, TableHead, TableBody, TableRow, TableCell } from '@mui/material'
 import { useRecoilState } from "recoil"
-import stateCurrentUser from '@/store/user'
+import { currentUserState } from '@/store/user'
 
 interface User {
   id: string
@@ -14,7 +14,7 @@ interface Users {
 
 export default function Groups({ users }: Users) {
   // hook below is only reevaluated when `user` changes
-  const [user] = useRecoilState(stateCurrentUser)
+  const [user] = useRecoilState(currentUserState)
 
   return (
     <>

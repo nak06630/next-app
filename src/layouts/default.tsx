@@ -14,7 +14,7 @@ import HomeIcon from "@mui/icons-material/Home"
 import InfoIcon from "@mui/icons-material/Info"
 
 import { useRecoilState } from "recoil"
-import currentUserState from '@/store/user'
+import { currentUserState } from '@/store/user'
 import { Auth } from '@aws-amplify/auth'
 import awsconfig from '@/aws-exports'
 

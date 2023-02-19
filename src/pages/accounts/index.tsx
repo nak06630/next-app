@@ -1,5 +1,5 @@
 import { useRecoilState } from "recoil"
-import currentUserState from '@/store/user'
+import { currentUserState } from '@/store/user'
 
 export default function Profile() {
   // hook below is only reevaluated when `user` changes

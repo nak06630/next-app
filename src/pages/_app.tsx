@@ -22,8 +22,9 @@ function MyApp(props: MyAppProps) {
   const router = useRouter()
 
   // 認証されていなかったらログアウト
-  Auth.currentAuthenticatedUser().catch(err => router.push('/'))
-
+  if (router.route.startsWith("/groups") || router.route.startsWith("/accounts")) {
+    Auth.currentAuthenticatedUser().catch(err => router.push('/'))
+  }
   const getLayout = router.route.startsWith("/groups") || router.route.startsWith("/accounts")
     ? (page: any) => <RecoilRoot><Layout>{page}</Layout></RecoilRoot>
     : (page: any) => <RecoilRoot>{page}</RecoilRoot>
