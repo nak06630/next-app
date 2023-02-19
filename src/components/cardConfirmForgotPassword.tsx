@@ -11,70 +11,58 @@ import { signupUserState } from '@/store/user'
 
 Auth.configure(awsconfig)
 
-interface SampleFormInput {
-  username: string
-  email: string
-  name: string
-  password: string
+interface FormInput {
+  code: string
+  newpassword: string
 }
 
-// バリデーションルール
 const schema = yup.object({
-  email: yup
-    .string()
-    .required('必須です')
-    .email('メールアドレス形式で入力してください'),
-  name: yup
+  code: yup
     .string()
     .required('必須です'),
-  password: yup
+  newpassword: yup
     .string()
-    .required('必須です')
-    .matches(
-      /^(?=.*[!-/:-@[-`{-~])(?=.*[0-9])(?=.*[a-z])[!-~]{8,}$/,
-      'パスワードを入力してください'
-    ),
+    .required('必須です'),
 })
 
-export default function CardSignUp() {
+export default function CardConfirmForgotPassword() {
   const router = useRouter()
   const [user, setSignupUserState] = useRecoilState(signupUserState)
   const [isAlert, setIsAlert] = useState(false)
   const [error, setError] = useState('')
 
-  const { register, handleSubmit, formState: { errors } } = useForm<SampleFormInput>({
+  const { register, handleSubmit, formState: { errors } } = useForm<FormInput>({
     resolver: yupResolver(schema)
   })
 
-  const onSubmit: SubmitHandler<SampleFormInput> = async (data) => {
-    const username = data.email
-    const password = data.password
-    const email = data.email
-    const name = data.name
+  const onSubmit: SubmitHandler<FormInput> = async (data) => {
+    if (!user) return
+    const username = user.username
+    const code = data.code
+    const newpassword = data.newpassword
     try {
-      const user = await Auth.signUp({
-        username,
-        password,
-        attributes: {
-          email,
-          name
-        }
-      })
+      await Auth.forgotPasswordSubmit(username, code, newpassword)
       setSignupUserState({ username: username, isVerification: true })
+      router.push('/')
     } catch (error: any) {
       setIsAlert(true)
       switch (error.code) {
-        case 'UsernameExistsException':
-          setError('既にユーザーが存在します。')
+        case 'CodeMismatchException':
+          setError('無効なコードが入力されました。')
           break
-        case 'InvalidPasswordException':
-        case 'InvalidParameterException':
+        case 'LimitExceededException':
+          setError('しばらく待ってから再登録してください。')
+          break
+        case 'ExpiredCodeException':
+          setError('コードは無効です。')
+          break
+        case 'NotAuthorizedException':
+        case 'CodeDeliveryFailureException':
         default:
           setError('Unauthorized: ' + error.code + ' : ' + error.message)
       }
     }
   }
-
 
   return (
     <Card>
@@ -82,25 +70,21 @@ export default function CardSignUp() {
       <CardHeader title="サインアップ"></CardHeader>
       <CardContent>
         <Stack spacing={3}>
-          <TextField required label="メールアドレス" type="email"
-            {...register('email')}
-            error={'email' in errors}
-            helperText={errors.email?.message}
+          <TextField disabled value={user?.username} />
+          <TextField required label="検証コード" type="code"
+            {...register('code')}
+            error={'code' in errors}
+            helperText={errors.code?.message}
           />
           <TextField required label="パスワード" type="password"
-            {...register('password')}
-            error={'password' in errors}
-            helperText={errors.password?.message}
-          />
-          <TextField required label="名前" type="name"
-            {...register('name')}
-            error={'name' in errors}
-            helperText={errors.name?.message}
+            {...register('newpassword')}
+            error={'newpassword' in errors}
+            helperText={errors.newpassword?.message}
           />
           <Button color="primary" variant="contained" size="large"
             onClick={handleSubmit(onSubmit)}
           >
-            登録
+            再発行
           </Button>
         </Stack>
       </CardContent>

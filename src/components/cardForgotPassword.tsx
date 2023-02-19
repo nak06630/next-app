@@ -24,19 +24,9 @@ const schema = yup.object({
     .string()
     .required('必須です')
     .email('メールアドレス形式で入力してください'),
-  name: yup
-    .string()
-    .required('必須です'),
-  password: yup
-    .string()
-    .required('必須です')
-    .matches(
-      /^(?=.*[!-/:-@[-`{-~])(?=.*[0-9])(?=.*[a-z])[!-~]{8,}$/,
-      'パスワードを入力してください'
-    ),
 })
 
-export default function CardSignUp() {
+export default function CardForgotPassword() {
   const router = useRouter()
   const [user, setSignupUserState] = useRecoilState(signupUserState)
   const [isAlert, setIsAlert] = useState(false)
@@ -48,27 +38,12 @@ export default function CardSignUp() {
 
   const onSubmit: SubmitHandler<SampleFormInput> = async (data) => {
     const username = data.email
-    const password = data.password
-    const email = data.email
-    const name = data.name
     try {
-      const user = await Auth.signUp({
-        username,
-        password,
-        attributes: {
-          email,
-          name
-        }
-      })
+      const user = await Auth.forgotPassword(username)
       setSignupUserState({ username: username, isVerification: true })
     } catch (error: any) {
       setIsAlert(true)
       switch (error.code) {
-        case 'UsernameExistsException':
-          setError('既にユーザーが存在します。')
-          break
-        case 'InvalidPasswordException':
-        case 'InvalidParameterException':
         default:
           setError('Unauthorized: ' + error.code + ' : ' + error.message)
       }
@@ -79,7 +54,7 @@ export default function CardSignUp() {
   return (
     <Card>
       {isAlert && <Alert severity="error" onClose={() => { setIsAlert(false) }}>{error}</Alert>}
-      <CardHeader title="サインアップ"></CardHeader>
+      <CardHeader title="パスワード再発行"></CardHeader>
       <CardContent>
         <Stack spacing={3}>
           <TextField required label="メールアドレス" type="email"
@@ -87,20 +62,10 @@ export default function CardSignUp() {
             error={'email' in errors}
             helperText={errors.email?.message}
           />
-          <TextField required label="パスワード" type="password"
-            {...register('password')}
-            error={'password' in errors}
-            helperText={errors.password?.message}
-          />
-          <TextField required label="名前" type="name"
-            {...register('name')}
-            error={'name' in errors}
-            helperText={errors.name?.message}
-          />
           <Button color="primary" variant="contained" size="large"
             onClick={handleSubmit(onSubmit)}
           >
-            登録
+            送信
           </Button>
         </Stack>
       </CardContent>

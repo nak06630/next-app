@@ -1,8 +1,24 @@
 import { atom } from 'recoil'
 
-type Payload = { email: string }
-type IdToken = { jwtToken: string; payload: Payload }
-type SignInUserSession = { idToken: IdToken }
+// CognitoUser
+type Payload = {
+  sub: string
+  'cognito:username': string
+  name: string
+  email: string
+  email_verified: boolean
+  phone_number: string
+  auth_time: number
+  iat: number
+  exp: number
+}
+type IdToken = {
+  jwtToken: string
+  payload: Payload
+}
+type SignInUserSession = {
+  idToken: IdToken
+}
 type CognitoUser = {
   signInUserSession: SignInUserSession
   username: string
@@ -16,6 +32,7 @@ export const currentUserState = atom<CognitoUser | null>({
   dangerouslyAllowMutability: true, // https://zenn.dev/sikkim/articles/f63c6f9d365ecf
 })
 
+// signin
 type signinUser = {
   username: string
   isVerification: boolean
@@ -25,6 +42,7 @@ export const signinUserState = atom<signinUser | null>({
   default: null,
 })
 
+// signup
 type signupUser = {
   username: string
   isVerification: boolean

@@ -32,7 +32,7 @@ const schema = yup.object({
     ),
 })
 
-export default function SignIn() {
+export default function CardSignIn() {
   const router = useRouter()
   const [user, setUser] = useRecoilState(currentUserState)
   const [isAlert, setIsAlert] = useState(false)
@@ -46,7 +46,35 @@ export default function SignIn() {
     try {
       const user = await Auth.signIn(data.email, data.password)
       setUser(user)
-      router.push("/groups/")
+
+      const { challengeName } = user
+      if (!challengeName) {
+        router.push("/groups/")
+        return
+      }
+
+      // Todo:
+      if (challengeName === 'SOFTWARE_TOKEN_MFA') {
+        const code = prompt("トークンを入力してください。")
+        if (!code) {
+          alert("コードは必須です。")
+          return
+        }
+        await Auth.confirmSignIn(user, code, 'SOFTWARE_TOKEN_MFA')
+        router.push("/groups/")
+        // Todo:
+      } else if (challengeName === 'NEW_PASSWORD_REQUIRED') {
+        // const { requiredAttributes } = user.challengeParam
+        const newPassword = prompt("新しいパスワードを入力してください。")
+        if (!newPassword) {
+          alert("新しいパスワードは必須です。")
+          return
+        }
+        await Auth.completeNewPassword(user, newPassword)
+        router.push("/groups/")
+      } else {
+        console.log(challengeName)
+      }
     } catch (error: any) {
       setIsAlert(true)
       switch (error.code) {
@@ -82,7 +110,8 @@ export default function SignIn() {
             ログイン
           </Button>
         </Stack>
-        <Link href="/signup">signup</Link>
+        <div><Link href="/signup">signup</Link></div>
+        <div><Link href="/forgotPassword">forgotPassword</Link></div>
       </CardContent>
     </Card>
   )
