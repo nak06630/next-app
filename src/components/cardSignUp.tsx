@@ -42,12 +42,10 @@ export default function CardSignUp() {
   const [isAlert, setIsAlert] = useState(false)
   const [error, setError] = useState('')
 
-  //https://dev.classmethod.jp/articles/mui-v5-rhf-v7/
   const { register, handleSubmit, formState: { errors } } = useForm<SampleFormInput>({
     resolver: yupResolver(schema)
   })
 
-  // フォーム送信時の処理
   const onSubmit: SubmitHandler<SampleFormInput> = async (data) => {
     const username = data.email
     const password = data.password

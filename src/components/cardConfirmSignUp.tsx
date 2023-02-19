@@ -15,7 +15,6 @@ interface FormInput {
   code: string
 }
 
-// バリデーションルール
 const schema = yup.object({
   code: yup
     .string()
@@ -32,7 +31,6 @@ export default function CardConfirmSignUp() {
     resolver: yupResolver(schema)
   })
 
-  // フォーム送信時の処理
   const onSubmit: SubmitHandler<FormInput> = async (data) => {
     if (!user) return
     const username = user.username

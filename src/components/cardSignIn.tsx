@@ -18,7 +18,6 @@ interface SampleFormInput {
   password: string
 }
 
-// バリデーションルール
 const schema = yup.object({
   email: yup
     .string()
@@ -39,15 +38,11 @@ export default function SignIn() {
   const [isAlert, setIsAlert] = useState(false)
   const [error, setError] = useState('')
 
-  //https://dev.classmethod.jp/articles/mui-v5-rhf-v7/
   const { register, handleSubmit, formState: { errors } } = useForm<SampleFormInput>({
     resolver: yupResolver(schema)
   })
 
-  // フォーム送信時の処理
   const onSubmit: SubmitHandler<SampleFormInput> = async (data) => {
-    // バリデーションチェックOK！なときに行う処理を追加
-    console.log(data)
     try {
       const user = await Auth.signIn(data.email, data.password)
       setUser(user)
